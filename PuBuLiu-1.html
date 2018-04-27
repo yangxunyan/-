@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			body{margin: 0;}
+			#ul1{
+				width: 1000px;
+				margin: 100px auto 0;
+			}
+		li{
+			list-style: none;
+				width: 225px;
+				float: left;
+				margin-right:10px;
+			}
+		li div{
+			border: 1px solid #000;
+		}
+		li img{
+				width: 223px;
+				display: block;
+			}
+		</style>
+		<script src="ajax.js"></script>
+		<script>
+			window.onload=function(){
+				var oUl=document.getElementById('ul1');
+				var aLi=oUl.getElementsByTagName('li');
+				var iLen=aLi.length;
+				var iPage=1;
+				//初始化数据；
+				
+				function getList(){
+				ajax('get','getPics.php','cpage='+iPage,function(data){
+					var data=JSON.parse(data);
+					for(var i=0;i<data.length;i++){
+						//获取高度最短的li是哪个；
+						var _index=getShort();
+						var oDiv=document.createElement('div');
+						var oImg=document.createElement('img');
+						oImg.src=data[i].preview;
+						 oImg.style.width='223px';
+						 oImg.style.height=data[i].height*(223/data[i].width)+'px';
+						oDiv.appendChild(oImg);//图片加载时间问题导致不一致
+						var oP=document.createElement('p');
+						oP.innerHTML=data[i].title;
+						oDiv.appendChild(oP);
+						aLi[_index].appendChild(oDiv);
+					}
+					
+				});}
+				getList();
+				window.onscroll=function(){
+					var _index=getShort();
+					var oLi=aLi[_index];//最短一列LI；
+					var scrollTop=document.documentElement.scrollTop||document.body.scrollTop;
+					if(getTop(oLi)+oLi.offsetHeight<document.documentElement.clientHeight+scrollTop){
+						iPage++;
+						getList();
+					}
+					
+				}
+				//找到最短一列：数组的按大小排序
+				function getShort(){
+					var index=0;
+					var ih=aLi[index].offsetHeight;
+					for(var i=1;i<iLen;i++){
+						if(aLi[i].offsetHeight<ih){
+							index=i;
+							ih=aLi[i].offsetHeight;
+						}
+					}
+					return index;
+				}
+				
+				function getTop(obj){
+					var iTop=0;
+					while(obj){
+						iTop+=obj.offsetTop;
+						obj=obj.offsetParent;
+					}
+					return iTop;
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<ul id="ul1">
+			<li>
+				<!--<div>
+					<img src="img/1.jpg" title="niu niu " />
+					<p>
+						比较学院风的一款哦，比较学院风的一款哦，比较学院风的一款哦，比较学院风的一款哦，比较学院风的一款哦，比较学院风的一款哦，比较学院风的一款哦，比较学院风的一款哦，比较学院风的一款哦，比较学院风的一款哦，比较学院风的一款哦，
+					</p>
+				</div>-->
+			</li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</ul>
+	</body>
+</html>
